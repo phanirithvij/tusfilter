@@ -208,7 +208,11 @@ class TusFilter(object):
         temp = dict(upload_finished=False, info_loaded=False)
         info = dict()
         env = Env(req=req, resp=resp, temp=temp, info=info)
-        if not req.path.startswith(self.upload_path):
+
+        x_method = env.req.headers.get('X-HTTP-Method-Override')
+        method = x_method or env.req.method
+
+        if not req.path.startswith(self.upload_path) or method == "GET":
             return self.app(environ, start_response)
         try:
             self.handle(env)
